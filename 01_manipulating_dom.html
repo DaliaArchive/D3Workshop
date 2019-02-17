@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>D3 Workshop - 01 Manipulating Dom</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/5.9.1/d3.min.js" integrity="sha256-RtVUDWfx0vF5nrvHDYcQoWSPaOuQ0R8Rq9kUG2kSvH8=" crossorigin="anonymous"></script>
+  <style type="text/css">
+    body {
+      margin: 2em;
+      font-family: sans-serif;
+    }
+  </style>
+</head>
+<body>
+  <h1>D3 Workshop - 01 Manipulating Dom</h1>
+  <div id="chart"></div>
+
+  <script type="text/javascript">
+    window.onload = () => {
+      const data = [3, 45, 56, 78, 12, 34, 66, 79, 32, 10]
+
+      const chart = d3.selectAll("#chart")
+
+      chart.selectAll("p")
+        .data(data)
+        .enter()
+        .append("p")
+        .text(d => `Hi! I am a paragraph and my value is: ${d}`)
+    };
+  </script>
+</body>
+</html>
