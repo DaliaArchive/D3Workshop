@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>D3 Workshop - 06 Interactivity</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/5.9.1/d3.min.js" integrity="sha256-RtVUDWfx0vF5nrvHDYcQoWSPaOuQ0R8Rq9kUG2kSvH8=" crossorigin="anonymous"></script>
+  <style type="text/css">
+    body {
+      margin: 2em;
+      font-family: sans-serif;
+    }
+
+    #chart svg {
+      overflow: visible;
+    }
+  </style>
+</head>
+<body>
+  <h1>D3 Workshop - 06 Interactivity</h1>
+  <div id="chart">
+    <svg width="800" height="200"></svg>
+  </div>
+
+  <script type="text/javascript">
+    window.onload = () => {
+      const svg = d3.selectAll("#chart svg")
+      const width = parseInt(svg.style("width"))
+      const height = parseInt(svg.style("height"))
+
+      const xValue = d => d.letter
+      const yValue = d => d.percentage
+
+      render = (data) => {
+        const allLetters = d3.map(data, xValue).keys()
+        const countLetters = allLetters.length
+
+        const barWidth = (width / countLetters) - 1
+
+        const xScale =
+          d3.scalePoint()
+            .domain(allLetters)
+            .range([20, width])
+
+        const yScale =
+          d3.scaleLinear()
+            .domain([0, d3.max(data, yValue)])
+            .range([height, 0])
+
+        const xAxis =
+          d3.axisBottom(xScale)
+
+        const yAxis =
+          d3.axisLeft(yScale)
+
+        svg.append("g")
+          .call(xAxis)
+          .attr("class", "xaxis")
+          .attr("transform", `translate(0, ${height})`)
+
+        svg.append("g")
+          .call(yAxis)
+          .attr("class", "yaxis")
+
+        // function to handle the "mouseover" event
+        const onMouseOver = (d) => {
+
+          // Calculating coordinates of the "g"
+          const x = (xScale(xValue(d)) - (barWidth / 2))
+          const y = (yScale(yValue(d)) - 20)
+
+          const tooltip=
+            svg.append("g")
+              .attr("class", "tooltip")
+              .attr("transform", `translate(${x}, ${y})`) // using "transform" to move the whole group
+
+          tooltip
+            .append("rect")
+              .attr("x", 0)
+              .attr("y", 0)
+              .attr("width", barWidth)
+              .attr("height", 18)
+              .attr("fill", "darkslategray")
+
+          tooltip
+            .append("text")
+              .attr("x", barWidth / 2)
+              .attr("y", 13)
+              .attr("font-size", "0.7em")
+              .attr("text-anchor", "middle")
+              .attr("fill", "white")
+              .text(yValue(d))
+        }
+
+        // function to handle the "mouseout" event
+        const onMouseOut = (d) => {
+
+          // Removing all tooltip elements
+          svg.selectAll("g.tooltip")
+            .remove()
+        }
+
+        svg.selectAll("rect")
+          .data(data)
+          .enter()
+          .append("rect")
+          .attr("x", d => (xScale(xValue(d)) - (barWidth / 2)))
+          .attr("y", d => yScale(yValue(d)))
+          .attr("width", barWidth)
+          .attr("height", d => (yScale(0) - yScale(yValue(d))))
+          .attr("fill", "teal")
+          .attr("title", yValue)
+          // setting event handlers
+          .on("mouseover", onMouseOver)
+          .on("mouseout", onMouseOut)
+      }
+
+      d3.csv("./data.csv").then(data => {
+        data.forEach(d => {
+          d.percentage = parseFloat(d.percentage)
+        })
+
+        render(data)
+      })
+    }
+  </script>
+</body>
+</html>
