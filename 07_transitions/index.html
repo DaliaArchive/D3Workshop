@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>D3 Workshop - 07 Transitions</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/5.9.1/d3.min.js" integrity="sha256-RtVUDWfx0vF5nrvHDYcQoWSPaOuQ0R8Rq9kUG2kSvH8=" crossorigin="anonymous"></script>
+  <style type="text/css">
+    body {
+      margin: 2em;
+      font-family: sans-serif;
+    }
+
+    #chart svg {
+      overflow: visible;
+    }
+  </style>
+</head>
+<body>
+  <h1>D3 Workshop - 07 Transitions</h1>
+  <div id="chart">
+    <svg width="800" height="200"></svg>
+  </div>
+
+  <script type="text/javascript">
+    window.onload = () => {
+      const svg = d3.selectAll("#chart svg")
+      const width = parseInt(svg.style("width"))
+      const height = parseInt(svg.style("height"))
+
+      const xValue = d => d.letter
+      const yValue = d => d.percentage
+
+      render = (data) => {
+        const allLetters = d3.map(data, xValue).keys()
+        const countLetters = allLetters.length
+
+        const barWidth = (width / countLetters) - 1
+
+        const xScale =
+          d3.scalePoint()
+            .domain(allLetters)
+            .range([20, width])
+
+        const yScale =
+          d3.scaleLinear()
+            .domain([0, d3.max(data, yValue)])
+            .range([height, 0])
+
+        const xAxis =
+          d3.axisBottom(xScale)
+
+        const yAxis =
+          d3.axisLeft(yScale)
+
+        svg.append("g")
+          .call(xAxis)
+          .attr("class", "xaxis")
+          .attr("transform", `translate(0, ${height})`)
+
+        svg.append("g")
+          .call(yAxis)
+          .attr("class", "yaxis")
+
+        const onMouseOver = (d) => {
+          const x = (xScale(xValue(d)) - (barWidth / 2))
+          const y = (yScale(yValue(d)) - 20)
+
+          const tooltip=
+            svg.append("g")
+              .attr("class", "tooltip")
+              .attr("transform", `translate(${x}, ${y})`) // using "transform" to move the whole group
+
+          tooltip
+            .append("rect")
+              .attr("x", 0)
+              .attr("y", 0)
+              .attr("width", barWidth)
+              .attr("height", 18)
+              // the attribute to change in the transition has to exists before
+              .attr("fill", "white")
+              // init the transition
+              .transition()
+              // duration of the transition
+              .duration(500)
+              .attr("fill", "darkslategray")
+
+          tooltip
+            .append("text")
+              .attr("x", barWidth / 2)
+              .attr("y", 13)
+              .attr("font-size", "0.0em")
+              .attr("text-anchor", "middle")
+              .attr("fill", "white")
+              .text(yValue(d))
+              .transition()
+              // delay to wait until the rect has finished its transition
+              .delay(500)
+              .duration(200)
+              .attr("font-size", "0.7em")
+        }
+
+        const onMouseOut = (d) => {
+          // callback to call when the transition has ended
+          const removeTooltipGroup = () => {
+            console.log("removeTooltipGroup")
+            svg.selectAll("g.tooltip")
+              .remove()
+          }
+
+          svg.selectAll("g.tooltip rect")
+            .transition()
+            .duration(2000)
+            .attr("fill", "white")
+            // calling callback when transition has ended
+            .on("end", removeTooltipGroup)
+        }
+
+        svg.selectAll("rect")
+          .data(data)
+          .enter()
+          .append("rect")
+          .attr("class", "bar")
+          .attr("x", d => (xScale(xValue(d)) - (barWidth / 2)))
+          .attr("y", d => yScale(yValue(d)))
+          .attr("width", barWidth)
+          .attr("height", d => (yScale(0) - yScale(yValue(d))))
+          .attr("fill", "teal")
+          .attr("title", yValue)
+          .on("mouseover", onMouseOver)
+          .on("mouseout", onMouseOut)
+      }
+
+      d3.csv("./data.csv").then(data => {
+        data.forEach(d => {
+          d.percentage = parseFloat(d.percentage)
+        })
+
+        render(data)
+      })
+    }
+  </script>
+</body>
+</html>
