@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>D3 Workshop - 03 Scales</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/5.9.1/d3.min.js" integrity="sha256-RtVUDWfx0vF5nrvHDYcQoWSPaOuQ0R8Rq9kUG2kSvH8=" crossorigin="anonymous"></script>
+  <style type="text/css">
+    body {
+      margin: 2em;
+      font-family: sans-serif;
+    }
+  </style>
+</head>
+<body>
+  <h1>D3 Workshop - 03 Scales</h1>
+  <div id="chart">
+    <svg width="800" height="200"></svg>
+  </div>
+
+  <script type="text/javascript">
+    window.onload = () => {
+      const dataSize = 100
+      const maxValue = 200
+      const data = Array(dataSize).fill().map(() => Math.round(Math.random() * maxValue))
+
+      const svg = d3.selectAll("#chart svg")
+      const width = svg.style("width").replace("px", "")
+      const height = svg.style("height").replace("px", "")
+
+      console.log("width", width)
+
+      const xScale =
+        d3.scaleLinear()
+          .domain([0, dataSize])
+          .range([0, width])
+
+      const yScale =
+        d3.scaleLinear()
+          .domain([0, d3.max(data)])
+          .range([0, height])
+
+      svg.selectAll("rect")
+        .data(data)
+        .enter()
+        .append("rect")
+        .attr("x", (d, i) => xScale(i))
+        .attr("y", d => height - yScale(d))
+        .attr("width", xScale(1) - 1)
+        .attr("height", d => yScale(d))
+        .attr("fill", "teal")
+    };
+  </script>
+</body>
+</html>
