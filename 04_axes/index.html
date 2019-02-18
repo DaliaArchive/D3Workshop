@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>D3 Workshop - 04 Axes</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/5.9.1/d3.min.js" integrity="sha256-RtVUDWfx0vF5nrvHDYcQoWSPaOuQ0R8Rq9kUG2kSvH8=" crossorigin="anonymous"></script>
+  <style type="text/css">
+    body {
+      margin: 2em;
+      font-family: sans-serif;
+    }
+
+    /* Trick to show the Axes even when they are out of the SVG */
+    #chart svg {
+      overflow: visible;
+    }
+  </style>
+</head>
+<body>
+  <h1>D3 Workshop - 04 Axes</h1>
+  <div id="chart">
+    <svg width="800" height="200"></svg>
+  </div>
+
+  <script type="text/javascript">
+    window.onload = () => {
+      const svg = d3.selectAll("#chart svg")
+      const width = parseInt(svg.style("width")) // We are parsing to number using parseInt
+      const height = parseInt(svg.style("height"))
+
+      // Helper functions to access to data values
+      const xValue = d => d.letter
+      const yValue = d => d.percentage
+
+      render = (data) => {
+        const allLetters = d3.map(data, xValue).keys()
+        const countLetters = allLetters.length
+
+        // We calculate the barWidth dynamically
+        // correlated to the svg width and the number of bars
+        const barWidth = (width / countLetters) - 1
+
+        // # Initialize the scales
+        // ## The xScale is not linear
+        const xScale =
+          d3.scalePoint()
+            .domain(allLetters)
+            .range([20, width])
+
+        // ## We invert the "range" so the yAxis ticks
+        //    start at the bottom
+        const yScale =
+          d3.scaleLinear()
+            .domain([0, d3.max(data, yValue)])
+            .range([height, 0])
+
+        // Initialize the Axes
+        const xAxis =
+          d3.axisBottom(xScale)
+
+        const yAxis =
+          d3.axisLeft(yScale)
+
+        // Append the Axes to the svg
+        // wrapping them in "g" elements to be able to access
+        // to them easily if needed. Maybe for styling for example
+        svg.append("g")
+          .call(xAxis)
+          .attr("class", "xaxis")
+          .attr("transform", `translate(0, ${height})`)
+
+        svg.append("g")
+          .call(yAxis)
+          .attr("class", "yaxis")
+
+        // # Adding our bars
+        // ## Calculating the y and the height is complicate
+        //    but once is done once we just has to copy & paste
+        //
+        // ## The "x" is adapted a bit to center the bars in the
+        //    xAxis ticks
+        svg.selectAll("rect")
+          .data(data)
+          .enter()
+          .append("rect")
+          .attr("x", d => (xScale(xValue(d)) - (barWidth / 2)))
+          .attr("y", d => yScale(yValue(d)))
+          .attr("width", barWidth)
+          .attr("height", d => (yScale(0) - yScale(yValue(d))))
+          .attr("fill", "teal")
+          .attr("title", yValue)
+      }
+
+      // Data from: https://people.sc.fsu.edu/~jburkardt/data/csv/csv.html
+      // letter_frequency.csv
+      d3.csv("./data.csv").then(data => {
+        // console.table(data) // confirm the data looks ok
+
+        // pre processing the csv data
+        data.forEach(d => {
+          d.percentage = parseFloat(d.percentage)
+        })
+
+        render(data)
+      })
+    }
+  </script>
+</body>
+</html>
