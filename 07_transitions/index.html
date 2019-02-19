@@ -75,13 +75,14 @@
               .attr("y", 0)
               .attr("width", barWidth)
               .attr("height", 18)
+              .attr("fill", "darkslategray")
               // the attribute to change in the transition has to exists before
-              .attr("fill", "white")
+              .attr("fill-opacity", 0)
               // init the transition
               .transition()
               // duration of the transition
               .duration(500)
-              .attr("fill", "darkslategray")
+              .attr("fill-opacity", 1)
 
           tooltip
             .append("text")
