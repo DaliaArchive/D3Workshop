@@ -64,12 +64,14 @@
             .domain([0, d3.max(data, yValue)])
             .range([height, 0])
 
+
         // Initialize the Axes
         const xAxis =
           d3.axisBottom(xScale)
 
         const yAxis =
           d3.axisLeft(yScale)
+            // .ticks(4)
 
         // Append the Axes to the svg
         // wrapping them in "g" elements to be able to access

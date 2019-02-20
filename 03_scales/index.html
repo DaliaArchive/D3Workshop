@@ -40,11 +40,13 @@
 
       console.log("width", width)
 
+      // Horizontal Scale
       const xScale =
         d3.scaleLinear()
           .domain([0, dataSize])
           .range([0, width])
 
+      // Vertical
       const yScale =
         d3.scaleLinear()
           .domain([0, d3.max(data)])

@@ -47,12 +47,12 @@
 
         const xScale =
           d3.scaleLinear()
-            .domain(d3.extent(data, xValue))
+            .domain([0, d3.max(data, xValue)])
             .range([20, width])
 
         const rScale =
           d3.scaleLinear()
-            .domain(d3.extent(data, rValue))
+            .domain([0, d3.max(data, rValue)])
             .range([2, 80])
 
         const cScale =
@@ -86,7 +86,6 @@
               return cScale(d.element)
             }
           })
-          .attr("fill-opacity", 0.8)
           .attr("title", d => d.element)
       }
 
