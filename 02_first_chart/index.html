@@ -9,20 +9,31 @@
       font-family: sans-serif;
     }
 
+    h1 {
+      border-bottom: 1px solid black;
+    }
+
+    #content {
+      width: 500px;
+      margin: 0 auto;
+    }
+
     svg {
       border: 1px solid black ;
     }
   </style>
 </head>
 <body>
-  <h1>D3 Workshop - 02 First Chart</h1>
-  <div id="chart">
-    <svg width="400" height="200"></svg>
+  <div id="content">
+    <h1>D3 Workshop - 02 First Chart</h1>
+    <div id="chart">
+      <svg width="500" height="200"></svg>
+    </div>
   </div>
 
   <script type="text/javascript">
     window.onload = () => {
-      const data = [3, 45, 56, 78, 12, 34, 66, 79, 32, 10, 56, 33, 27, 10, 55, 61, 23, 45]
+      const data = [80, 45, 56, 78, 12, 34, 66, 79, 32, 10, 56, 33, 27, 10, 55, 61, 23, 45, 78, 12, 34, 66, 79]
 
       const svg = d3.selectAll("#chart svg");
 

@@ -11,15 +11,26 @@
       color: white;
     }
 
+    h1 {
+      border-bottom: 1px solid black;
+    }
+
+    #content {
+      width: 1200px;
+      margin: 0 auto;
+    }
+
     #chart svg {
       overflow: visible;
     }
   </style>
 </head>
 <body>
-  <h1>D3 Workshop - 08 Solar System</h1>
-  <div id="chart">
-    <svg width="1200" height="200"></svg>
+  <div id="content">
+    <h1>D3 Workshop - 08 Solar System</h1>
+    <div id="chart">
+      <svg width="1200" height="200"></svg>
+    </div>
   </div>
 
   <script type="text/javascript">
@@ -67,6 +78,7 @@
           .attr("cx", d => xScale(xValue(d)))
           .attr("cy", height / 2)
           .attr("r", d => rScale(rValue(d)))
+          // Attr base on function result
           .attr("fill", d => {
             if (d.element == "Sun") {
               return "yellow"
@@ -76,8 +88,6 @@
           })
           .attr("fill-opacity", 0.8)
           .attr("title", d => d.element)
-          // .on("mouseover", onMouseOver)
-          // .on("mouseout", onMouseOut)
       }
 
       // From:
