@@ -7,6 +7,8 @@
     body {
       margin: 2em;
       font-family: sans-serif;
+      background-color: black;
+      color: white;
     }
 
     #chart svg {
@@ -30,6 +32,8 @@
       const rValue = d => d.radius
 
       render = (data) => {
+        const allPlanetNames = d3.map(data, d => d.element).keys()
+
         const xScale =
           d3.scaleLinear()
             .domain(d3.extent(data, xValue))
@@ -38,7 +42,12 @@
         const rScale =
           d3.scaleLinear()
             .domain(d3.extent(data, rValue))
-            .range([2, 60])
+            .range([2, 80])
+
+        const cScale =
+          d3.scaleOrdinal()
+            .domain(allPlanetNames)
+            .range(d3.schemeCategory10);
 
         console.log("rScale", rScale.domain())
 
@@ -50,61 +59,6 @@
           .attr("class", "xaxis")
           .attr("transform", `translate(0, ${height})`)
 
-        const onMouseOver = (d) => {
-          const x = (xScale(xValue(d)) - (barWidth / 2))
-          const y = (yScale(yValue(d)) - 20)
-
-          const tooltip=
-            svg.append("g")
-              .attr("class", "tooltip")
-              .attr("transform", `translate(${x}, ${y})`) // using "transform" to move the whole group
-
-          tooltip
-            .append("rect")
-              .attr("x", 0)
-              .attr("y", 0)
-              .attr("width", barWidth)
-              .attr("height", 18)
-              .attr("fill", "darkslategray")
-              // the attribute to change in the transition has to exists before
-              .attr("fill-opacity", 0)
-              // init the transition
-              .transition()
-              // duration of the transition
-              .duration(500)
-              .attr("fill-opacity", 1)
-
-          tooltip
-            .append("text")
-              .attr("x", barWidth / 2)
-              .attr("y", 13)
-              .attr("font-size", "0.0em")
-              .attr("text-anchor", "middle")
-              .attr("fill", "white")
-              .text(yValue(d))
-              .transition()
-              // delay to wait until the rect has finished its transition
-              .delay(500)
-              .duration(200)
-              .attr("font-size", "0.7em")
-        }
-
-        const onMouseOut = (d) => {
-          // callback to call when the transition has ended
-          const removeTooltipGroup = () => {
-            console.log("removeTooltipGroup")
-            svg.selectAll("g.tooltip")
-              .remove()
-          }
-
-          svg.selectAll("g.tooltip rect")
-            .transition()
-            .duration(2000)
-            .attr("fill", "white")
-            // calling callback when transition has ended
-            .on("end", removeTooltipGroup)
-        }
-
         svg.selectAll("circle")
           .data(data)
           .enter()
@@ -113,8 +67,14 @@
           .attr("cx", d => xScale(xValue(d)))
           .attr("cy", height / 2)
           .attr("r", d => rScale(rValue(d)))
-          .attr("fill", "teal")
-          .attr("fill-opacity", 0.4)
+          .attr("fill", d => {
+            if (d.element == "Sun") {
+              return "yellow"
+            } else {
+              return cScale(d.element)
+            }
+          })
+          .attr("fill-opacity", 0.8)
           .attr("title", d => d.element)
           // .on("mouseover", onMouseOver)
           // .on("mouseout", onMouseOut)
